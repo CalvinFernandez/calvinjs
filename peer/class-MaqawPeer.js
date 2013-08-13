@@ -33,7 +33,7 @@ function MaqawPeer(id, options) {
   // Establish connection to socket
   var socketUrl = 'http://' + options.host + ':' + options.port;
   this.socket = io.connect(socketUrl);
-  this.socket.emit('init connect', { id: this.id, name: options.key, representative: options.representative });
+  this.socket.emit('init connect', { id: this.id, key: options.key, representative: options.representative });
 }
 
 // Connect to another peer

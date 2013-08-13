@@ -37,11 +37,12 @@ function MaqawManager(options, display) {
     this.connectionManager = new MaqawConnectionManager(this.peer);
 
     /* listen for peer js events */
-    this.peer.on('open', function (id) {
-        console.log("My id: " + id);
-        that.id = id
-        that.peer.id = id;
-        maqawCookies.setItem('peerId', id, Infinity);
+    this.peer.on('open', function (peerObject) {
+        that.id = peerObject.id;
+        that.peer.id = peerObject.id;
+        console.log("My id: " + that.id);
+        maqawCookies.setItem('peerId', that.id, Infinity);
+        that.representatives = peerObject.connections;
     });
 
     this.peer.on('visitors', function (visitors) {
@@ -179,7 +180,6 @@ function MaqawManager(options, display) {
     function saveSession() {
         saveVisitorSession();
         saveRepSession();
-
     }
 
     // Add listener to save session state on exit so it can be reloaded later.
