@@ -3,8 +3,8 @@
  */
 function MaqawManager(options, display) {
     var that = this,
-        host = '54.214.232.157',
-        port = 3000;
+        host = 'localhost',
+        port = 3001;
 
     // the key that peers will use to connect to each other on the peer server
     this.key = options.key;
@@ -15,6 +15,8 @@ function MaqawManager(options, display) {
 
     // this id is used whenever the client makes a connection with peerjs
     this.id = maqawCookies.getItem('peerId');
+    console.log("inside of cookies, the peerid is");
+    console.log(this.id);
     // an array of ids of representatives that are available for chat
     this.maqawDisplay = display;
     this.visitorSession;
@@ -25,30 +27,35 @@ function MaqawManager(options, display) {
 
     if (this.id) {
         //  peer id has been stored in the browser. Use it
-        this.peer = new Peer(this.id, {key: this.key, host: host, port: port});
+        this.peer = new MaqawPeer(this.id, {key: this.key, host: host, port: port});
     } else {
         //  No peer id cookie found. Retrieve new id from browser
-        this.peer = new Peer({key: this.key, host: host, port: port});
+        this.peer = new MaqawPeer({key: this.key, host: host, port: port});
     }
 
     // initialize the connection manager
     this.connectionManager = new MaqawConnectionManager(this.peer);
 
     /* listen for peer js events */
-    this.peer.on('open', function (id) {
-        console.log("My id: " + id);
-        that.id = id
-        maqawCookies.setItem('peerId', id, Infinity);
+    this.peer.on('open', function (peerObject) {
+        that.id = peerObject.id;
+        that.peer.id = peerObject.id;
+        console.log("My id: " + that.id);
+        maqawCookies.setItem('peerId', that.id, Infinity);
+        that.representatives = peerObject.connections;
     });
 
-    this.peer.on('clients', function (visitors) {
+    this.peer.on('visitors', function (visitors) {
         console.log('visitors: ' + visitors.msg);
+        console.log(visitors.msg)
         that.visitors = visitors.msg;
         that.handleVisitorList(that.visitors);
     });
 
     this.peer.on('representatives', function (reps) {
+        console.log('representatives');
         console.log('Reps: ' + reps.msg);
+        console.log(reps.msg);
         that.representatives = reps.msg;
     });
 
@@ -122,6 +129,7 @@ function MaqawManager(options, display) {
         }
 
         // update the session with the current list of visitors
+        that.peer.poll('VISITORS');
         that.repSession.updateVisitorList(that.visitors);
 
         // display the rep session
@@ -172,7 +180,6 @@ function MaqawManager(options, display) {
     function saveSession() {
         saveVisitorSession();
         saveRepSession();
-
     }
 
     // Add listener to save session state on exit so it can be reloaded later.
