@@ -1,8 +1,7 @@
 function ChatWindow() {
   this.el = document.getElementById('testing');
 
-  this.template = new VisitorTemplate(); 
-  this.template.chat = "hello";
+  this.template = VisitorTemplate; 
 
   var doc = this.template.render(); 
 
