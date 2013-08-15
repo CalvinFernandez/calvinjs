@@ -18,11 +18,23 @@ var qDirectives = {
     },
 
     {
+      name: 'qenter',
+      link: function(directiveObject, template) {
+        var fnName = directiveObject.node.getAttribute('qenter');
+        directiveObject.node.addEventListener('keyup', function(event) {
+          if (event.keyCode === 13) {
+            template.value(fnName)(event);     
+          }
+        });
+      }
+    },
+
+    {
       name: 'qclick',
       link: function(directiveObject, template) {
         var fnName = directiveObject.node.getAttribute('qclick');
         directiveObject.node.addEventListener('mouseup', function(event) {
-          template.evaluate(fnName)(event);      
+          template.value(fnName)(event);
         });   
       }    
     }, 
@@ -84,6 +96,8 @@ var qDirectives = {
 
           for (var i = 0; i < arr.length; i ++) {
             var childTemplate = template.clone();
+            referenceNode.style.display = 'block';
+
             var clonedNode = referenceNode.cloneNode(true);
             var clonedCompiledObject = _this.compile(clonedNode); 
 
@@ -106,27 +120,79 @@ var qDirectives = {
 
     {
       name: 'qinterpolate',
-      test: function(node) {
-       var value = node.nodeValue;
-        if (value) {
-          var match = /(?:\[\[)(.*)(?:\]\])/.exec(value); 
-          if (match) {
-            return true;
-          }
+      INTERP_REGEX: /(?:\[\[)(.*)(?:\]\])/,
+
+      contains: function(str) {
+        var match = this.INTERP_REGEX.exec(str);    
+        if (match) {
+          return true;
         } 
         return false;
+      },
+
+      test: function(node) {
+        var value = node.nodeValue;
+        var attrs = node.attributes;
+        if (value) {
+          if (this.contains(value)) {
+            return true;
+          }
+        } else if (attrs) {
+          for (var i = 0; i < attrs.length; i ++ ) {
+            var attr = attrs[i];  
+            if (this.contains(attr.value)) {
+              return true;
+            }
+          }    
+        } 
+        return false;
+      },
+      
+      compile: function(node) {
+        if (node.nodeName === '#text') {
+          return { 'node': node }; 
+        } else {
+          var attrs = node.attributes;  
+          for (var i = 0; i < attrs.length; i ++) {
+            var attr = attrs[i]; 
+            if (this.contains(attr.value)) {
+              return { 'node': node, 'attr': attr };
+            }
+          } 
+        }
       },
 
       link: function(compiledObject, template) {
         var _this = this;
         this.compiledObject = compiledObject;
+        var nodeValue = '';
 
-        var nodeValue = compiledObject.node.nodeValue;
+        if (compiledObject.attr) {
+          nodeValue = compiledObject.attr.value;    
+        } else { 
+          nodeValue = compiledObject.node.nodeValue;
+        }
+
         var variableName = /(?:\[\[)(.*)(?:\]\])/.exec(nodeValue)[1];          
+
+        this.oldValue = "[[" + variableName + "]]";  //  Old value will be used to update the id later on
         
         template.qWatch(variableName, function(newValue) {
-          _this.compiledObject.node.nodeValue = newValue;
+          if (_this.compiledObject.attr) {
+            //
+            //  We can have multiple strings for an attribute 
+            //  so we don't want to replace the entire attribute
+            //  just the old string
+            //
+            _this.compiledObject.attr.value = 
+              _this.compiledObject.attr.value.replace(_this.oldValue, newValue);  
+            _this.oldValue = newValue;
+
+          } else {
+            _this.compiledObject.node.nodeValue = newValue;
+          }
         });
+
         template.qApply(variableName);
       }
     } 

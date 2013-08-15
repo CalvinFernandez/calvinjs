@@ -87,6 +87,16 @@
 }
 
 .maqaw-chat-display {
+    background-color: white !important;
+    border-right: 1px solid lightgrey !important;
+    border-left: 1px solid lightgrey !important;
+
+    height: 212px !important;
+    width: 248px !important;
+
+    background-color: white !important;
+    color: black !important;
+
     border-bottom: 1px solid lightgrey !important;
     padding: 10px !important;
     height: 140px !important;
@@ -383,7 +393,3 @@ input[type="password"]:focus#maqaw-login-password-field {
     font-style: italic !important;
     text-align: center !important;
 }
-
-
-
-

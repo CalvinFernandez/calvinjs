@@ -44,10 +44,17 @@ qTemplate.prototype.render = function() {
 qTemplate.prototype.qApply = function(name) {
   var value = this.value(name);
   var _this = this;   
-
-  this.watched[name].forEach(function(fn) {
-    fn.call(_this, value);  
-  });  
+  
+  if (this.watched[name]) {
+    //
+    //  Some objects (like qmodels) 
+    //  don't specify a watch because 
+    //  there's no ui update
+    //
+    this.watched[name].forEach(function(fn) {
+      fn.call(_this, value);  
+    });  
+  }
 }
 
 qTemplate.prototype.update = function(variableName, value) {

@@ -1,5 +1,7 @@
+//
 // Displays the visitors chat sessions
 // chatWindow - the div that displays the chats
+//
 function MaqawChatManager(chatWindow) {
     this.chatWindow = chatWindow;
     this.activeVisitor = undefined;

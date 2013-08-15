@@ -1,10 +1,12 @@
-var ContainerTemplate = {
-  template: ["<div class='maqaw-chat-container'>",
-                "<div></div>",
-                "<div style='display:block;'></div>",
-             "</div>"],
+var ContainerTemplate = new qTemplate();
 
-  render: function(data) {
-    return template.join('\n');  
-  }
-};
+ContainerTemplate.template = 
+  [ "<div class='maqaw-chat-container'>",
+      "<div class='maqaw-default-client-header'>",
+        "<div class='maqaw-chat-header-text'>[[welcome]]</div>",
+        "</div>",
+        "<div id='body' class='maqaw-body'></div>",
+      "</div>",
+    "</div>"];
+
+

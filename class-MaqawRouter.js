@@ -12,7 +12,7 @@
 
   this.socket.on('peer open', function(data) {
     _this.maqawPeer = data;   
-    new ChatWindow();  
+    _this.app = new MaqawWindow();  
   });
 
   this.socket.on(event, function(data) {
