@@ -1,7 +1,52 @@
 //
 //  Use this to register new qDirectives   
+//  Directives must contain a unique name   
+//  and a link function. 
+//  
+//  ---------- Directive Properties ---------
 //
+//  link: 
+//    The link function is used by
+//  the linker to connect objects in 
+//  the template to objects in the DOM.
+//  If you specify <p>[[foo]]</p> in the
+//  DOM, and have the variable foo = 'bar'
+//  in your template object, you need
+//  to tell calvin how to connect the DOM
+//  to the model. You can use the link function to
+//  register dom event listeners, for example.
+//  Additionally, you should use the link function
+//  register a qWatch. Registering a model  
+//  name with the templates qWatch allows you
+//  to update the DOM when changes to the model
+//  occur. 
 //
+//  test:
+//    The test function is used by the compiler to 
+//  determine if a given node is an instance of the 
+//  directive. The default behavior is to search
+//  for an attribute matching the directive name
+//  but you can specify anything you want.
+//
+//  compile:
+//    The compile function is used by the compiler
+//  to turn a DOM element into an object which will
+//  later be used by the linker to connect the DOM 
+//  to the template. The default behavior is to 
+//  simply return { 'node': node }, but the user is
+//  allowed to specify anything they want. 
+// 
+//  after: 
+//    The compiler uses the after function to determine
+//  what to do after it has processed a node. The 
+//  default behavior is to simply return the children
+//  of a node. NOTE: If you do decide to define an 
+//  after method on your directive and you do NOT return
+//  the child nodes the compiler will assume that you 
+//  do not wish to analyze the children and will skip 
+//  them. 
+//
+
 var qDirectives = {
 
   directives: [
