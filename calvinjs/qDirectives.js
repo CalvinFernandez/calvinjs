@@ -1,6 +1,7 @@
 //
 //  Use this to register new qDirectives   
 //
+//
 var qDirectives = {
 
   directives: [
